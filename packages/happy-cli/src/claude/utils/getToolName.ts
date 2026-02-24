@@ -33,6 +33,9 @@ const STANDARD_TOOLS: Record<string, string> = {
     'WebFetch': 'Fetch Web Page',
     'WebSearch': 'Search Web',
     
+    // User interaction
+    'AskUserQuestion': 'Ask a Question',
+
     // Special cases
     'exit_plan_mode': 'Execute Plan',
     'ExitPlanMode': 'Execute Plan'

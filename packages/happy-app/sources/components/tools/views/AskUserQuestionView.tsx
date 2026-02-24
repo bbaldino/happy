@@ -4,7 +4,6 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { ToolViewProps } from './_all';
 import { ToolSectionView } from '../ToolSectionView';
 import { sessionAllow } from '@/sync/ops';
-import { sync } from '@/sync/sync';
 import { t } from '@/text';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -240,12 +239,12 @@ export const AskUserQuestionView = React.memo<ToolViewProps>(({ tool, sessionId 
         const responseText = responseLines.join('\n');
 
         try {
-            // 1. Approve the permission (like PermissionFooter.handleApprove does)
+            // Approve the permission with the answer text in the reason field.
+            // The CLI's PermissionHandler detects AskUserQuestion and passes the answer
+            // back to Claude as the tool result, so Claude can read the user's selections.
             if (tool.permission?.id) {
-                await sessionAllow(sessionId, tool.permission.id);
+                await sessionAllow(sessionId, tool.permission.id, undefined, undefined, undefined, responseText);
             }
-            // 2. Send the answer as a message
-            await sync.sendMessage(sessionId, responseText);
         } catch (error) {
             console.error('Failed to submit answer:', error);
         } finally {

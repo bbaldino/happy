@@ -84,7 +84,15 @@ export class PermissionHandler {
             this.permissionMode = response.mode;
         }
 
-        // Handle 
+        // Handle AskUserQuestion - the user's answer is passed via the reason field
+        // We return deny with the answer text so it becomes the tool_result that Claude reads
+        if (pending.toolName === 'AskUserQuestion' && response.approved && response.reason) {
+            logger.debug('AskUserQuestion answered via mobile', response.reason);
+            pending.resolve({ behavior: 'deny', message: response.reason });
+            return;
+        }
+
+        // Handle
         if (pending.toolName === 'exit_plan_mode' || pending.toolName === 'ExitPlanMode') {
             // Handle exit_plan_mode specially
             logger.debug('Plan mode result received', response);
