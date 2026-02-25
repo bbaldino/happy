@@ -46,7 +46,6 @@ yarn-error.*
 .git/
 packages/happy-server/
 packages/happy-cli/dist/
-packages/happy-cli/scripts/
 packages/happy-agent/dist/
 .claude/
 .dev/
