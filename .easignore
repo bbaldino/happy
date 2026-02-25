@@ -1,0 +1,55 @@
+# Inherit everything from .gitignore
+# (EAS reads .easignore INSTEAD of .gitignore, so we must duplicate)
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+/ios
+/android
+/packages/happy-app/ios
+/packages/happy-app/android
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+.env
+
+# typescript
+*.tsbuildinfo
+
+# Additional EAS exclusions (not needed for mobile app build)
+.git/
+packages/happy-server/
+packages/happy-cli/dist/
+packages/happy-cli/scripts/
+packages/happy-agent/dist/
+.claude/
+.dev/
+notes/
+progress*.txt
+CLAUDE.local.md
