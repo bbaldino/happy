@@ -1,11 +1,6 @@
 name: Build Android App (EAS)
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'packages/happy-app/**'
-      - '.github/workflows/eas-build-android.yml'
   workflow_dispatch:
 
 jobs:
