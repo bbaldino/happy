@@ -150,10 +150,7 @@ export default {
             ]
         ],
         updates: {
-            url: "https://u.expo.dev/fcccae03-dab4-4e01-93eb-4f5dff3f15a7",
-            requestHeaders: {
-                "expo-channel-name": "production"
-            }
+            enabled: false,
         },
         experiments: {
             typedRoutes: true
