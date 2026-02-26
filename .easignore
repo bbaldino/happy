@@ -44,11 +44,17 @@ yarn-error.*
 
 # Additional EAS exclusions (not needed for mobile app build)
 .git/
-packages/happy-server/
+packages/happy-server/sources/
+packages/happy-server/node_modules/
 packages/happy-cli/dist/
+packages/happy-cli/src/
+packages/happy-cli/node_modules/
 packages/happy-agent/dist/
+packages/happy-agent/src/
+packages/happy-agent/node_modules/
 .claude/
 .dev/
+.github/
 notes/
 progress*.txt
 CLAUDE.local.md
