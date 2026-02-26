@@ -131,7 +131,8 @@ export async function claudeLocalLauncher(session: Session): Promise<LauncherRes
             } catch (e) {
                 logger.debug('[local]: launch error', e);
                 // If Claude exited with non-zero exit code, propagate it
-                if (e instanceof ExitCodeError) {
+                // But don't overwrite a pending switch — the abort may have caused the exit
+                if (e instanceof ExitCodeError && !exitReason) {
                     session.client.closeClaudeSessionTurn('failed');
                     exitReason = { type: 'exit', code: e.exitCode };
                     break;
