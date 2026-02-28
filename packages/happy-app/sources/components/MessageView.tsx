@@ -39,6 +39,8 @@ function RenderBlock(props: {
   sessionId: string;
   getMessageById?: (id: string) => Message | null;
 }): React.ReactElement {
+  const viewInline = useSetting('viewInline');
+
   switch (props.message.kind) {
     case 'user-text':
       return <UserTextBlock message={props.message} sessionId={props.sessionId} />;
@@ -47,6 +49,10 @@ function RenderBlock(props: {
       return <AgentTextBlock message={props.message} sessionId={props.sessionId} />;
 
     case 'tool-call':
+      // When viewInline is off, hide tool call messages to reduce chatter
+      if (!viewInline) {
+        return <></>;
+      }
       return <ToolCallBlock
         message={props.message}
         metadata={props.metadata}
