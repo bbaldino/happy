@@ -528,6 +528,7 @@ export const ca: TranslationStructure = {
             other: 'Altres',
             otherDescription: 'Escriu la teva pròpia resposta',
             otherPlaceholder: 'Escriu la teva resposta...',
+            chatAboutThis: 'Parlar sobre això',
         }
     },
 

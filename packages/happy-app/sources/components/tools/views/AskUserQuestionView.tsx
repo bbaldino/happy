@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, TextInput } from 'reac
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { ToolViewProps } from './_all';
 import { ToolSectionView } from '../ToolSectionView';
-import { sessionAllow } from '@/sync/ops';
+import { sessionAllow, sessionDeny } from '@/sync/ops';
 import { t } from '@/text';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -162,6 +162,15 @@ const styles = StyleSheet.create((theme) => ({
         color: theme.colors.text,
         flex: 1,
     },
+    chatAboutThisButton: {
+        paddingVertical: 12,
+        alignItems: 'center',
+    },
+    chatAboutThisText: {
+        fontSize: 14,
+        color: theme.colors.textSecondary,
+        textDecorationLine: 'underline',
+    },
     otherTextInput: {
         flex: 1,
         fontSize: 14,
@@ -244,6 +253,19 @@ export const AskUserQuestionView = React.memo<ToolViewProps>(({ tool, sessionId 
             return newMap;
         });
     }, []);
+
+    const handleChatAboutThis = React.useCallback(async () => {
+        if (!sessionId || !tool.permission?.id || isSubmitting) return;
+        setIsSubmitting(true);
+        setIsSubmitted(true);
+        try {
+            await sessionDeny(sessionId, tool.permission.id);
+        } catch (error) {
+            console.error('Failed to deny AskUserQuestion:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }, [sessionId, tool.permission?.id, isSubmitting]);
 
     const handleSubmit = React.useCallback(async () => {
         if (!sessionId || !allQuestionsAnswered || isSubmitting) return;
@@ -436,23 +458,33 @@ export const AskUserQuestionView = React.memo<ToolViewProps>(({ tool, sessionId 
                 })}
 
                 {canInteract && (
-                    <View style={styles.actionsContainer}>
+                    <>
+                        <View style={styles.actionsContainer}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.submitButton,
+                                    (!allQuestionsAnswered || isSubmitting) && styles.submitButtonDisabled,
+                                ]}
+                                onPress={handleSubmit}
+                                disabled={!allQuestionsAnswered || isSubmitting}
+                                activeOpacity={0.7}
+                            >
+                                {isSubmitting ? (
+                                    <ActivityIndicator size="small" color={theme.colors.button.primary.tint} />
+                                ) : (
+                                    <Text style={styles.submitButtonText}>{t('tools.askUserQuestion.submit')}</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
                         <TouchableOpacity
-                            style={[
-                                styles.submitButton,
-                                (!allQuestionsAnswered || isSubmitting) && styles.submitButtonDisabled,
-                            ]}
-                            onPress={handleSubmit}
-                            disabled={!allQuestionsAnswered || isSubmitting}
+                            style={styles.chatAboutThisButton}
+                            onPress={handleChatAboutThis}
+                            disabled={isSubmitting}
                             activeOpacity={0.7}
                         >
-                            {isSubmitting ? (
-                                <ActivityIndicator size="small" color={theme.colors.button.primary.tint} />
-                            ) : (
-                                <Text style={styles.submitButtonText}>{t('tools.askUserQuestion.submit')}</Text>
-                            )}
+                            <Text style={styles.chatAboutThisText}>{t('tools.askUserQuestion.chatAboutThis')}</Text>
                         </TouchableOpacity>
-                    </View>
+                    </>
                 )}
             </View>
         </ToolSectionView>

@@ -530,6 +530,7 @@ export const zhHans: TranslationStructure = {
             other: '其他',
             otherDescription: '输入您自己的答案',
             otherPlaceholder: '输入您的答案...',
+            chatAboutThis: '讨论此问题',
         }
     },
 

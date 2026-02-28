@@ -515,6 +515,7 @@ export const it: TranslationStructure = {
             other: 'Altro',
             otherDescription: 'Scrivi la tua risposta',
             otherPlaceholder: 'Scrivi la tua risposta...',
+            chatAboutThis: 'Chatta su questo',
         },
         multiEdit: {
             editNumber: ({ index, total }: { index: number; total: number }) => `Modifica ${index} di ${total}`,

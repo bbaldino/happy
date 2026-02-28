@@ -526,6 +526,7 @@ export const en: TranslationStructure = {
             other: 'Other',
             otherDescription: 'Type your own answer',
             otherPlaceholder: 'Type your answer...',
+            chatAboutThis: 'Chat about this',
         },
         desc: {
             terminalCmd: ({ cmd }: { cmd: string }) => `Terminal(cmd: ${cmd})`,

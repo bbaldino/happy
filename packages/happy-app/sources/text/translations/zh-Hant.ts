@@ -512,6 +512,7 @@ export const zhHant: TranslationStructure = {
             other: '其他',
             otherDescription: '輸入您自己的答案',
             otherPlaceholder: '輸入您的答案...',
+            chatAboutThis: '討論此問題',
         },
         desc: {
             terminalCmd: ({ cmd }: { cmd: string }) => `終端機(命令: ${cmd})`,

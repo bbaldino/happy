@@ -518,6 +518,7 @@ export const ja: TranslationStructure = {
             other: 'その他',
             otherDescription: '自分の回答を入力',
             otherPlaceholder: '回答を入力...',
+            chatAboutThis: 'これについて相談する',
         },
         multiEdit: {
             editNumber: ({ index, total }: { index: number; total: number }) => `編集 ${index}/${total}`,

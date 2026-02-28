@@ -538,6 +538,7 @@ export const ru: TranslationStructure = {
             other: 'Другое',
             otherDescription: 'Введите свой ответ',
             otherPlaceholder: 'Введите ваш ответ...',
+            chatAboutThis: 'Обсудить это',
         }
     },
 

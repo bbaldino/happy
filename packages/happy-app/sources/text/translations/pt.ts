@@ -528,6 +528,7 @@ export const pt: TranslationStructure = {
             other: 'Outro',
             otherDescription: 'Digite sua própria resposta',
             otherPlaceholder: 'Digite sua resposta...',
+            chatAboutThis: 'Conversar sobre isso',
         }
     },
 
