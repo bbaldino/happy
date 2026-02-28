@@ -77,6 +77,7 @@ export default {
             favicon: "./sources/assets/images/favicon.png"
         },
         plugins: [
+            require("./plugins/withGradleProperties.js"),
             require("./plugins/withEinkCompatibility.js"),
             [
                 "expo-router",
