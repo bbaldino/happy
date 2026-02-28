@@ -223,8 +223,9 @@ export const AskUserQuestionView = React.memo<ToolViewProps>(({ tool, sessionId 
         // captured the values above. TODO: Revisit this logic.
         setIsSubmitted(true);
 
-        // Format answers as readable text
-        const responseLines: string[] = [];
+        // Format answers as structured JSON mapping question text → selected label(s)
+        // This matches the SDK's expected AskUserQuestion response format
+        const answers: Record<string, string> = {};
         questions.forEach((q, qIndex) => {
             const selected = selections.get(qIndex);
             if (selected && selected.size > 0) {
@@ -232,16 +233,16 @@ export const AskUserQuestionView = React.memo<ToolViewProps>(({ tool, sessionId 
                     .map(optIndex => q.options[optIndex]?.label)
                     .filter(Boolean)
                     .join(', ');
-                responseLines.push(`${q.header}: ${selectedLabels}`);
+                answers[q.question] = selectedLabels;
             }
         });
 
-        const responseText = responseLines.join('\n');
+        const responseText = JSON.stringify(answers);
 
         try {
-            // Approve the permission with the answer text in the reason field.
-            // The CLI's PermissionHandler detects AskUserQuestion and passes the answer
-            // back to Claude as the tool result, so Claude can read the user's selections.
+            // Approve the permission with the answers JSON in the reason field.
+            // The CLI's PermissionHandler detects AskUserQuestion and builds the
+            // correct updatedInput with questions + answers for the SDK.
             if (tool.permission?.id) {
                 await sessionAllow(sessionId, tool.permission.id, undefined, undefined, undefined, responseText);
             }

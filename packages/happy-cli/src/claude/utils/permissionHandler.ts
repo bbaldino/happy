@@ -85,11 +85,27 @@ export class PermissionHandler {
             this.permissionMode = response.mode;
         }
 
-        // Handle AskUserQuestion - the user's answer is passed via the reason field
-        // We return deny with the answer text so it becomes the tool_result that Claude reads
+        // Handle AskUserQuestion - the user's answers are passed as JSON in the reason field.
+        // The SDK expects { behavior: 'allow', updatedInput: { questions, answers } }
+        // where answers maps question text → selected label(s).
         if (pending.toolName === 'AskUserQuestion' && response.approved && response.reason) {
             logger.debug('AskUserQuestion answered via mobile', response.reason);
-            pending.resolve({ behavior: 'deny', message: response.reason });
+            const inputObj = pending.input as { questions?: unknown[] } | undefined;
+            let answers: Record<string, string> = {};
+            try {
+                answers = JSON.parse(response.reason);
+            } catch {
+                // Fallback: treat the whole reason as a single answer
+                logger.debug('AskUserQuestion: could not parse answers JSON, using raw text');
+                answers = { answer: response.reason };
+            }
+            pending.resolve({
+                behavior: 'allow',
+                updatedInput: {
+                    questions: inputObj?.questions ?? [],
+                    answers,
+                }
+            });
             return;
         }
 
@@ -123,6 +139,20 @@ export class PermissionHandler {
      * Creates the canCallTool callback for the SDK
      */
     handleToolCall = async (toolName: string, input: unknown, mode: EnhancedMode, options: { signal: AbortSignal }): Promise<PermissionResult> => {
+
+        // AskUserQuestion must always go through the mobile permission flow
+        // so the user can answer the questions, regardless of permission mode
+        if (toolName === 'AskUserQuestion') {
+            let toolCallId = this.resolveToolCallId(toolName, input);
+            if (!toolCallId) {
+                await delay(1000);
+                toolCallId = this.resolveToolCallId(toolName, input);
+                if (!toolCallId) {
+                    throw new Error(`Could not resolve tool call ID for ${toolName}`);
+                }
+            }
+            return this.handlePermissionRequest(toolCallId, toolName, input, options.signal);
+        }
 
         // Check if tool is explicitly allowed
         if (toolName === 'Bash') {
