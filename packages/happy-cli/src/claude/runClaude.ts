@@ -437,7 +437,13 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
     process.on('SIGINT', cleanup);
 
     // Handle uncaught exceptions and rejections
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', (error: NodeJS.ErrnoException) => {
+        // EPIPE is a harmless broken pipe that can happen during mode transitions
+        // (e.g., Ink writing to stdout after terminal teardown). Don't tear down for it.
+        if (error.code === 'EPIPE') {
+            logger.debug('[START] Ignoring EPIPE in uncaughtException handler:', error);
+            return;
+        }
         logger.debug('[START] Uncaught exception:', error);
         cleanup();
     });
