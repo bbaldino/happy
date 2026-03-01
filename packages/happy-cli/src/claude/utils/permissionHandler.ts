@@ -140,9 +140,12 @@ export class PermissionHandler {
      */
     handleToolCall = async (toolName: string, input: unknown, mode: EnhancedMode, options: { signal: AbortSignal }): Promise<PermissionResult> => {
 
-        // AskUserQuestion must always go through the mobile permission flow
-        // so the user can answer the questions, regardless of permission mode
-        if (toolName === 'AskUserQuestion') {
+        // AskUserQuestion and ExitPlanMode must always go through the mobile
+        // permission flow regardless of permission mode. AskUserQuestion needs
+        // user answers, ExitPlanMode needs plan approval.
+        if (toolName === 'AskUserQuestion'
+            || toolName === 'ExitPlanMode'
+            || toolName === 'exit_plan_mode') {
             let toolCallId = this.resolveToolCallId(toolName, input);
             if (!toolCallId) {
                 await delay(1000);
