@@ -50,10 +50,12 @@ function RenderBlock(props: {
 
     case 'tool-call':
       // When viewInline is off, hide tool call messages to reduce chatter,
-      // but always show interactive tools (AskUserQuestion) and tools
-      // awaiting permission approval
+      // but always show interactive tools (AskUserQuestion, ExitPlanMode) and
+      // tools awaiting permission approval
       if (!viewInline
         && props.message.tool.name !== 'AskUserQuestion'
+        && props.message.tool.name !== 'ExitPlanMode'
+        && props.message.tool.name !== 'exit_plan_mode'
         && !(props.message.tool.permission && props.message.tool.permission.status === 'pending')
       ) {
         return <></>;
