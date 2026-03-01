@@ -909,7 +909,7 @@ export function normalizeRawMessage(id: string, localId: string | null, createdA
                 };
             }
             if (raw.content.data.type === 'reasoning') {
-                // Cast codex messages to agent text messages
+                // Cast codex reasoning to thinking content so it's hidden by default
                 return {
                     id,
                     localId,
@@ -917,8 +917,8 @@ export function normalizeRawMessage(id: string, localId: string | null, createdA
                     role: 'agent',
                     isSidechain: false,
                     content: [{
-                        type: 'text',
-                        text: raw.content.data.message,
+                        type: 'thinking',
+                        thinking: raw.content.data.message,
                         uuid: id,
                         parentUUID: null
                     }],
@@ -987,6 +987,7 @@ export function normalizeRawMessage(id: string, localId: string | null, createdA
                 } satisfies NormalizedMessage;
             }
             if (raw.content.data.type === 'reasoning') {
+                // Cast ACP reasoning to thinking content so it's hidden by default
                 return {
                     id,
                     localId,
@@ -994,8 +995,8 @@ export function normalizeRawMessage(id: string, localId: string | null, createdA
                     role: 'agent',
                     isSidechain: false,
                     content: [{
-                        type: 'text',
-                        text: raw.content.data.message,
+                        type: 'thinking',
+                        thinking: raw.content.data.message,
                         uuid: id,
                         parentUUID: null
                     }],
