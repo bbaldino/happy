@@ -1079,13 +1079,13 @@ export function useSession(id: string): Session | null {
 const emptyArray: unknown[] = [];
 
 export function useSessionMessages(sessionId: string): { messages: Message[], isLoaded: boolean } {
-    return storage(useShallow((state) => {
-        const session = state.sessionMessages[sessionId];
-        return {
-            messages: session?.messages ?? emptyArray,
-            isLoaded: session?.isLoaded ?? false
-        };
-    }));
+    // Use separate selectors with Object.is comparison instead of useShallow.
+    // This avoids potential issues with useShallow's useRef-based caching
+    // interacting with useSyncExternalStore's subscribe callbacks in React 19,
+    // which could cause missed re-renders when messages arrive via WebSocket.
+    const messages = storage((state) => state.sessionMessages[sessionId]?.messages ?? emptyArray) as Message[];
+    const isLoaded = storage((state) => state.sessionMessages[sessionId]?.isLoaded ?? false);
+    return { messages, isLoaded };
 }
 
 export function useMessage(sessionId: string, messageId: string): Message | null {

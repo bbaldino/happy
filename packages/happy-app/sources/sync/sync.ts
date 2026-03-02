@@ -294,7 +294,19 @@ class Sync {
                     break;
                 }
                 const batch = pending.splice(0, pending.length);
-                this.applyMessages(sessionId, batch);
+                try {
+                    this.applyMessages(sessionId, batch);
+                } catch (e) {
+                    console.error('Failed to apply messages for session', sessionId, e);
+                    // Don't lose the messages — put them back for the next attempt
+                    let queue = this.sessionMessageQueue.get(sessionId);
+                    if (!queue) {
+                        queue = [];
+                        this.sessionMessageQueue.set(sessionId, queue);
+                    }
+                    queue.unshift(...batch);
+                    break;
+                }
             }
         };
 
@@ -308,7 +320,13 @@ class Sync {
 
         // Try synchronous path first to avoid microtask deferral.
         // This ensures Zustand store updates trigger immediate React re-renders.
-        if (lock.tryRunSync(drainQueue)) {
+        try {
+            if (lock.tryRunSync(drainQueue)) {
+                onComplete();
+                return;
+            }
+        } catch (e) {
+            // Ensure onComplete runs even if drainQueue throws after tryRunSync
             onComplete();
             return;
         }
