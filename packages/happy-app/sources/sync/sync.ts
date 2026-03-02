@@ -286,7 +286,8 @@ class Sync {
 
         this.sessionQueueProcessing.add(sessionId);
         const lock = this.getSessionMessageLock(sessionId);
-        void lock.inLock(() => {
+
+        const drainQueue = () => {
             while (true) {
                 const pending = this.sessionMessageQueue.get(sessionId);
                 if (!pending || pending.length === 0) {
@@ -295,13 +296,25 @@ class Sync {
                 const batch = pending.splice(0, pending.length);
                 this.applyMessages(sessionId, batch);
             }
-        }).finally(() => {
+        };
+
+        const onComplete = () => {
             this.sessionQueueProcessing.delete(sessionId);
             const pending = this.sessionMessageQueue.get(sessionId);
             if (pending && pending.length > 0) {
                 this.scheduleQueuedMessagesProcessing(sessionId);
             }
-        });
+        };
+
+        // Try synchronous path first to avoid microtask deferral.
+        // This ensures Zustand store updates trigger immediate React re-renders.
+        if (lock.tryRunSync(drainQueue)) {
+            onComplete();
+            return;
+        }
+
+        // Lock is contended, fall back to async path
+        void lock.inLock(drainQueue).finally(onComplete);
     }
 
     private hasPendingOutboxMessages() {

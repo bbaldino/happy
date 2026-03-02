@@ -2,6 +2,25 @@ export class AsyncLock {
     private permits: number = 1;
     private promiseResolverQueue: Array<(v: boolean) => void> = [];
 
+    /**
+     * Try to run `func` synchronously if the lock is available.
+     * Returns true if the lock was acquired and func ran, false if contended.
+     * This avoids the microtask delay of the async path, which ensures
+     * Zustand store updates trigger immediate React re-renders.
+     */
+    tryRunSync<T>(func: () => T): boolean {
+        if (this.permits <= 0) {
+            return false;
+        }
+        this.permits -= 1;
+        try {
+            func();
+        } finally {
+            this.unlock();
+        }
+        return true;
+    }
+
     async inLock<T>(func: () => Promise<T> | T): Promise<T> {
         try {
             await this.lock();
